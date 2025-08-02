@@ -4,7 +4,9 @@ import matplotlib.pyplot as plt
 from tabulate import tabulate
 from termcolor import colored
 
+
 def get_analyst_price_targets(ticker):
+
     stock = yf.Ticker(ticker)
     analyst_info = stock.analyst_price_targets
     return analyst_info
@@ -27,6 +29,7 @@ def format_price_target(current_price, target_dict):
 tickers = ["AAPL", "MSFT", "GOOGL", "AMZN", "META", "TSLA", "NVDA"]
 
 
+
 current_prices = {t: yf.Ticker(t).history(period='1d')['Close'].iloc[-1] for t in tickers}
 
 
@@ -42,11 +45,13 @@ for ticker in tickers:
             color,
             attrs=['bold']
             ),
-            'Median Target': targets.get('median', 'N/A'),
-            'Mean Target': targets.get('mean', 'N/A'),
+            "Curr": current_prices[ticker],
             'Upside': format_price_target(current_prices[ticker], targets),
-            'High': targets.get('high', 'N/A'),
-            'Low': targets.get('low', 'N/A')
+            'Mean Target': targets.get('mean', 'N/A'),
+            'Median Target': targets.get('median', 'N/A'),
+            'Low': targets.get('low', 'N/A'),
+            'High': targets.get('high', 'N/A')
+            
         }
         analysis_data.append(row)
 
@@ -65,7 +70,7 @@ print(tabulate(
 
 plt.figure(figsize=(12, 6))
 df = pd.DataFrame(analysis_data)
-df['Upside%'] = ((df['Mean Target'] - df['Current']) / df['Current']) * 100
+df['Upside%'] = ((df['Mean Target'] - df['Curr']) / df['Curr']) * 100
 df = df.sort_values('Upside%', ascending=False)
 
 colors = ['green' if x > 0 else 'red' for x in df['Upside%']]
